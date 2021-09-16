@@ -1,0 +1,11 @@
+<IfModule mod_rewrite.c>
+	Options -Multiviews
+	RewriteEngine On
+	# Set base to the public folder
+	RewriteBase /public
+	# Only rewrite if directory/file doesn't exist
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	# Rewrite to index.php with url
+	RewriteRule ^(.+)$ index.php?url=$1 [QSA,L]
+</IfModule>
