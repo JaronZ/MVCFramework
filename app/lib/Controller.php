@@ -6,7 +6,8 @@ abstract class Controller {
 		return new $model(...$params);
 	}
 
-	public function view(string $view, array $data = []){
+	public function view(string $view, ?PageSettings $settings = null, array $data = []){
+		$settings ??= new PageSettings();
 		$body = APP_ROOT."/views/".$view.".php";
 		if(file_exists($body)){
 			require_once(APP_ROOT."/views/shared/layout.php");
