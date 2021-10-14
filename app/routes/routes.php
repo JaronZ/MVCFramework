@@ -1,5 +1,3 @@
 <?php
-Router::default(function(){
-	echo "default page";
-});
+Router::default([HomeController::class, "index"]);
 Router::get("/login/", [HomeController::class, "login"]);
