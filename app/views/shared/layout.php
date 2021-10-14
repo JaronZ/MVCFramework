@@ -1,3 +1,4 @@
+<?php require_once(APP_ROOT."/views/shared/authorization.php") ?>
 <!DOCTYPE html>
 <html>
 <head>

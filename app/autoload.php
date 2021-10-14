@@ -18,4 +18,5 @@ autoload(__DIR__."/lib");
 autoload(__DIR__."/models");
 autoload(__DIR__."/controllers");
 autoload(__DIR__."/routes");
+session_start();
 new Core();
