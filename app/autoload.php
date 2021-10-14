@@ -15,4 +15,5 @@ function autoload($dir){
 }
 autoload(__DIR__."/config");
 autoload(__DIR__."/lib");
+autoload(__DIR__."/routes");
 new Core();
