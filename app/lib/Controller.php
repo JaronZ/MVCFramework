@@ -6,7 +6,7 @@ abstract class Controller {
 		return new $model(...$params);
 	}
 
-	public function view(string $view, ?PageSettings $settings = null, array $data = []){
+	public final function view(string $view, ?PageSettings $settings = null, array $data = []){
 		$settings ??= new PageSettings();
 		$body = APP_ROOT."/views/".$view.".php";
 		if(file_exists($body)){
