@@ -7,7 +7,11 @@ class Core {
 			echo "Unknown route";
 			return;
 		}
-		call_user_func_array($route["action"], $route["params"]);
+		$action = $route["action"];
+		if(is_array($action)){
+			$action[0] = new $action[0];
+		}
+		call_user_func_array($action, $route["params"]);
 	}
 
 	public function getURL(){
