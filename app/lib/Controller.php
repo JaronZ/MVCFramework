@@ -1,11 +1,5 @@
 <?php
 abstract class Controller {
-	public function model(string $model, array $params = []){
-		$model = ucwords($model)."Model";
-		require_once(APP_ROOT."/models/".$model.".php");
-		return new $model(...$params);
-	}
-
 	public final function view(string $view, ?PageSettings $settings = null, array $data = []){
 		$settings ??= new PageSettings();
 		$body = APP_ROOT."/views/".$view.".php";
