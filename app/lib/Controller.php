@@ -9,4 +9,9 @@ abstract class Controller {
 		}
 		die("View does not exist");
 	}
+
+	public final function json($data){
+		header("Content-type: application/json");
+		echo json_encode($data);
+	}
 }
