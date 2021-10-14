@@ -1,2 +1,2 @@
 <?php
-require_once("../app/require.php");
+require_once("../app/autoload.php");

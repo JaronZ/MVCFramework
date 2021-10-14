@@ -13,3 +13,6 @@ function autoload($dir){
         is_dir($file) ? autoload($file) : include($file);
     }
 }
+autoload(__DIR__."/config");
+autoload(__DIR__."/lib");
+new Core();
