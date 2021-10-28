@@ -1,32 +1,16 @@
 <?php
 class Core {
 	public function __construct(){
-		$url = $this->getURL();
-		$route = count($url) == 0 ? Router::default() : Router::getRoute($url, $_SERVER["REQUEST_METHOD"]);
+		$route = isset($_GET["url"]) ? Router::getRoute($_GET["url"], $_SERVER["REQUEST_METHOD"]) : Router::default();
 		if($route == null) {
 			echo "Unknown route";
 			return;
 		}
 		$action = $route["action"];
 		if(is_array($action)){
-			$action[0] = new $action[0];
+			$controller = /* "App\\Controllers\\". */$action[0];
+			$action[0] = new $controller;
 		}
 		call_user_func_array($action, $route["params"]);
-	}
-
-	public function getURL(){
-		if(isset($_GET["url"])){
-			// Get url and remove the slash at the end
-			// Then sanitize the url, so characters like @ can not be used
-			// Then break it into an array at every forward slash
-			$url = explode("/",
-				filter_var(
-					rtrim($_GET["url"], "/"),
-				FILTER_SANITIZE_URL)
-			);
-
-			return $url;
-		}
-		return [];
 	}
 }
