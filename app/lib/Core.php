@@ -8,11 +8,11 @@ class Core {
 			echo "Unknown route";
 			return;
 		}
-		$action = $route["action"];
+		$action = $route->getAction();
 		if(is_array($action)){
 			$controller = /* "App\\Controllers\\". */$action[0];
 			$action[0] = new $controller;
 		}
-		call_user_func_array($action, $route["params"]);
+		call_user_func_array($action, $route->params);
 	}
 }
