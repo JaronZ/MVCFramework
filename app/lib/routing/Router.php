@@ -4,16 +4,6 @@ class Router {
 	 * @var Route[][]
 	 */
 	private static array $routes = [];
-
-	/**
-	 * Get or set the default route for the specified method
-	 * @param string $method The method to get routes from or add routes to
-	 * @param array|callable|null $action The action to set as default
-	 */
-	public static final function default(string $method, $action = null) {
-		if(!$action) return Router::getRoute("/", $method);
-		Router::addRoute($method, new Route("/", $action));
-	}
 	
 	/**
 	 * Get one of the routes of this router
@@ -25,10 +15,11 @@ class Router {
 		// Check if the router has any routes for the specified method
 		if(!isset(Router::$routes[$method])) return null;
 		// Get the routes that match the start of the url
-		$routes = array_filter(Router::$routes[$method], function($route) use ($url) {
-			if ($url === "/") return $route->getRoute() === $url;
-			return strpos($url, trim($route->getRoute(), "/")) === 0;
-		});
+		$routes = array_values(array_filter(Router::$routes[$method], function($route) use ($url) {
+			$route = $route->getRoute();
+			if ($route === "/") return $route === $url;
+			return strpos($url, trim($route, "/")) === 0;
+		}));
 		if(count($routes) === 0) return null;
 		$route = $routes[0];
 		$route->params = Router::getParams($url, $route->getRoute());
@@ -41,9 +32,7 @@ class Router {
 	 * @param array|callable $action The action to perform when this route is hit
 	 */
 	public static final function get(string $route, $action) {
-		$route = new Route($route, $action);
-		Router::addRoute("GET", $route);
-		Router::addRoute("HEAD", $route);
+		Router::addRoute(["GET", "HEAD"], $route, $action);
 	}
 
 	/**
@@ -52,7 +41,7 @@ class Router {
 	 * @param array|callable $action The action to perform when this route is hit
 	 */
 	public static final function post(string $route, $action) {
-		return Router::addRoute("POST", new Route($route, $action));
+		return Router::addRoute("POST", $route, $action);
 	}
 
 	/**
@@ -61,7 +50,7 @@ class Router {
 	 * @param array|callable $action The action to perform when this route is hit
 	 */
 	public static final function put(string $route, $action) {
-		return Router::addRoute("PUT", new Route($route, $action));
+		return Router::addRoute("PUT", $route, $action);
 	}
 
 	/**
@@ -70,7 +59,7 @@ class Router {
 	 * @param array|callable $action The action to perform when this route is hit
 	 */
 	public static final function delete(string $route, $action) {
-		return Router::addRoute("DELETE", new Route($route, $action));
+		return Router::addRoute("DELETE", $route, $action);
 	}
 
 	/**
@@ -79,7 +68,16 @@ class Router {
 	 * @param array|callable $action The action to perform when this route is hit
 	 */
 	public static final function patch(string $route, $action) {
-		return Router::addRoute("PATCH", new Route($route, $action));
+		return Router::addRoute("PATCH", $route, $action);
+	}
+
+	/**
+	 * Add a route to the OPTIONS method
+	 * @param string $route The route to add
+	 * @param array|callable $action The action to perform when this route is hit
+	 */
+	public static final function options(string $route, $action) {
+		return Router::addRoute("OPTIONS", $route, $action);
 	}
 
 	/**
@@ -88,26 +86,33 @@ class Router {
 	 * @param array|callable $action The action to perform when this route is hit
 	 */
 	public static final function any(string $route, $action) {
-		$route = new Route($route, $action);
-		Router::addRoute("GET", $route);
-		Router::addRoute("POST", $route);
-		Router::addRoute("PUT", $route);
-		Router::addRoute("DELETE", $route);
-		Router::addRoute("PATCH", $route);
+		Router::addRoute(["GET", "HEAD", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"], $route, $action);
+	}
+
+	/**
+	 * Add a route to all matched methods
+	 * @param string[] $methods The methods to add the route to
+	 * @param string $route The route to add
+	 * @param array|callable $action The action to perform when this route is hit
+	 */
+	public static final function match(array $methods, string $route, $action) {
+		Router::addRoute($methods, $route, $action);
 	}
 
 	/**
 	 * Add a route to the routes of the specified method
-	 * @param string $method The method to add a route to
+	 * @param string|string[] $method The method to add a route to
 	 * @param string $route The route to add
 	 * @param array|callable $action The action to perform when this route is hit
-	 * @return Route The created route
 	 */
-	private static final function addRoute(string $method, Route $route) {
-		// Add method to routes if it doesn't exist
-		Router::$routes[$method] ??= [];
-		Router::$routes[$method][] = $route;
-		return $route;
+	private static final function addRoute($methods, string $route, $action) {
+		$route = new Route($route, $action);
+		foreach(is_array($methods) ? $methods : [$methods] as $method) {
+			// Add method to routes if it doesn't exist
+			Router::$routes[$method] ??= [];
+			Router::$routes[$method][] = $route;
+			return $route;
+		}
 	}
 
 	/**
